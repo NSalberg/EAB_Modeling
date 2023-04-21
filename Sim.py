@@ -50,7 +50,7 @@ def sim(variables, t, params):
 
     beta = params[5]
     gamma = params[6]
-    k = params[7]
+    K = params[7]
 
 
     dBdt = alpha * Bl - delta * B
