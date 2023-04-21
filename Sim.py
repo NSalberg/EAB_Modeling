@@ -5,7 +5,7 @@ import scipy.optimize
 from scipy.integrate import odeint
 
 
-weeks = range(0, 1000)
+weeks = range(0, 100)
 deaths = []
 
 
@@ -29,19 +29,19 @@ delta_prime = 1/5
 
 # We need to test these parameters
 beta = 0.0000001
-gamma = 0.0000001
-K = 100
+gamma = 35
+K = 1000
 params0 = np.array([alpha, delta, mu, mu_prime, delta_prime, beta, gamma, K])
 
 
-y0 = [100, 0, 0, 10]
+y0 = [100, 0, 1, 0]
 
 def sim(variables, t, params):
     B = variables[0]
     Bl = variables[1]
     Il = variables[2]
     W = variables[3]
-
+    
     alpha = params[0]
     delta = params[1]
     mu = params[2]
@@ -50,7 +50,7 @@ def sim(variables, t, params):
 
     beta = params[5]
     gamma = params[6]
-    K = params[7]
+    k = params[7]
 
 
     dBdt = alpha * Bl - delta * B
@@ -60,42 +60,39 @@ def sim(variables, t, params):
 
     return [dBdt, dBldt, dIldt, dWdt]
 
-def loss(params):
-    y = odeint(sim, y0, t, args=(params,))
-    return np.sum((y[:, 3] - deaths)**2)
-
-
-
-
-#min = scipy.optimize.fmin(loss, params0)
-
-t = np.linspace(weeks[0], weeks[-1], num=100000)
+t = np.linspace(weeks[0], weeks[-1], num=10000)
 
 output = odeint(sim, y0, t, args=(params0,))
 
 
 
-# Plot the data and the best fit
-f,dataAndBestFit =  plt.subplots(1,1)
+
+
+
+
+# Plot the results
+f,EAB_and_EAB_larvae =  plt.subplots(1,1)
 # add a title
-dataAndBestFit.set_title('EAB and Eab larvae vs time')
+EAB_and_EAB_larvae.set_title('EAB and Eab larvae vs time')
 
 
-dataAndBestFit.set_xlabel('Weeks')
-dataAndBestFit.set_ylabel('Population')
+EAB_and_EAB_larvae.set_xlabel('Weeks')
+EAB_and_EAB_larvae.set_ylabel('Population')
 
-borer, = dataAndBestFit.plot(t, output[:, 0], label='Borer')
-borer_larvae, = dataAndBestFit.plot(t, output[:, 1], label='Borer Larvae')
+borer, = EAB_and_EAB_larvae.plot(t, output[:, 3], label='Borer')
+borer_larvae, = EAB_and_EAB_larvae.plot(t, output[:, 1], label='Borer Larvae')
 
-dataAndBestFit.legend(handles=[borer_larvae, borer],)
+EAB_and_EAB_larvae.legend(handles=[borer_larvae, borer],)
 
-#plot all the other lines on a different graph
+#plot all the lines on a another graph
 f,allLines =  plt.subplots(1,1)
 
 # add a small title that describes the model params
 allLines.set_title('EAB, Eab larvae, infected larvae, and wasps vs time')
 
 """
+these are the annotations for the parameters
+
 allLines.annotate('beta = ' + str(round(min[0],3) ) , xy=(.7, 150), xytext=(0, 0), textcoords='offset points') # type: ignore
 allLines.annotate('gamma = ' + str(round(min[1],3)), xy=(.7, 125), xytext=(0, 0), textcoords='offset points') # type: ignore
 allLines.annotate('delta = ' + str(round(min[2],3)), xy=(.7, 100), xytext=(0, 0), textcoords='offset points') # type: ignore
