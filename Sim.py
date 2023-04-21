@@ -19,7 +19,7 @@ alpha = 1/45
 delta = 1/12
 
 # number of eggs per adult
-mu = 20
+mu = 1
 
 # time wasps spend as larvae
 mu_prime = 1/45
@@ -34,7 +34,7 @@ K = 1000
 params0 = np.array([alpha, delta, mu, mu_prime, delta_prime, beta, gamma, K])
 
 
-y0 = [100, 0, 1, 0]
+y0 = [100, 0, 0, 1100]
 
 def sim(variables, t, params):
     B = variables[0]
@@ -60,14 +60,12 @@ def sim(variables, t, params):
 
     return [dBdt, dBldt, dIldt, dWdt]
 
-t = np.linspace(weeks[0], weeks[-1], num=10000)
+t = np.linspace(weeks[0], weeks[-1], num=1000)
 
 output = odeint(sim, y0, t, args=(params0,))
 
 
-
-
-
+np.savetxt("output.txt",output, fmt="%.18f")
 
 
 # Plot the results
@@ -108,6 +106,8 @@ W, = allLines.plot(t, output[:, 3], label='Wasps')
 allLines.legend(handles=[B, Bl, Il, W])
 
 plt.show()
+
+
 
 
 
