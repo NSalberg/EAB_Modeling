@@ -5,7 +5,7 @@ import scipy.optimize
 from scipy.integrate import odeint
 
 
-weeks = range(0, 100)
+weeks = range(0, 1000)
 deaths = []
 
 
@@ -19,7 +19,7 @@ alpha = 1/45
 delta = 1/12
 
 # number of eggs per adult
-mu = 1
+mu = .5
 
 # time wasps spend as larvae
 mu_prime = 1/45
@@ -28,13 +28,13 @@ mu_prime = 1/45
 delta_prime = 1/5
 
 # We need to test these parameters
-beta = 0.0000001
+beta = 0.0002
 gamma = 35
 K = 1000
 params0 = np.array([alpha, delta, mu, mu_prime, delta_prime, beta, gamma, K])
 
 
-y0 = [100, 0, 0, 1100]
+y0 = [1000, 0, 0, 1100]
 
 def sim(variables, t, params):
     B = variables[0]
@@ -60,7 +60,7 @@ def sim(variables, t, params):
 
     return [dBdt, dBldt, dIldt, dWdt]
 
-t = np.linspace(weeks[0], weeks[-1], num=1000)
+t = np.linspace(weeks[0], weeks[-1], num=100)
 
 output = odeint(sim, y0, t, args=(params0,))
 
