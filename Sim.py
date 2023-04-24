@@ -31,17 +31,22 @@ delta_prime = 1/5
 beta = 0.0002
 gamma = 35
 K = 1000
+
+
 params0 = np.array([alpha, delta, mu, mu_prime, delta_prime, beta, gamma, K])
 
 
-y0 = [1000, 0, 0, 1100]
+y0 = [1000, 0, 0, 1000]
 
 def sim(variables, t, params):
+    # variables
     B = variables[0]
     Bl = variables[1]
     Il = variables[2]
     W = variables[3]
-    
+
+
+    # params 
     alpha = params[0]
     delta = params[1]
     mu = params[2]
@@ -60,7 +65,7 @@ def sim(variables, t, params):
 
     return [dBdt, dBldt, dIldt, dWdt]
 
-t = np.linspace(weeks[0], weeks[-1], num=100)
+t = np.linspace(weeks[0], weeks[-1], num=1000)
 
 output = odeint(sim, y0, t, args=(params0,))
 
@@ -68,25 +73,23 @@ output = odeint(sim, y0, t, args=(params0,))
 np.savetxt("output.txt",output, fmt="%.18f")
 
 
+
+f, (EAB_and_Wasps, EAB_larvae_and_infected_larvae, allLines) = plt.subplots(3, 1, sharex=True)
+
 # Plot the results
-f,EAB_and_EAB_larvae =  plt.subplots(1,1)
-# add a title
-EAB_and_EAB_larvae.set_title('EAB and Eab larvae vs time')
+EAB_larvae_and_infected_larvae.set_title('Infected Larvae and EAB larvae vs time')
+EAB_larvae_and_infected_larvae.set_xlabel('Weeks')
+EAB_larvae_and_infected_larvae.set_ylabel('Population')
+
+infected_larvae, = EAB_larvae_and_infected_larvae.plot(t, output[:, 2], label='Infected Larvae')
+borer_larvae, = EAB_larvae_and_infected_larvae.plot(t, output[:, 1], label='Borer Larvae')
+
+EAB_larvae_and_infected_larvae.legend(handles=[borer_larvae, infected_larvae],)
 
 
-EAB_and_EAB_larvae.set_xlabel('Weeks')
-EAB_and_EAB_larvae.set_ylabel('Population')
-
-borer, = EAB_and_EAB_larvae.plot(t, output[:, 3], label='Borer')
-borer_larvae, = EAB_and_EAB_larvae.plot(t, output[:, 1], label='Borer Larvae')
-
-EAB_and_EAB_larvae.legend(handles=[borer_larvae, borer],)
-
-#plot all the lines on a another graph
-f,allLines =  plt.subplots(1,1)
-
+#plot all the lines on the same graph
 # add a small title that describes the model params
-allLines.set_title('EAB, Eab larvae, infected larvae, and wasps vs time')
+allLines.set_title('EAB, EAB larvae, infected larvae, and wasps vs time')
 
 """
 these are the annotations for the parameters
@@ -105,7 +108,27 @@ W, = allLines.plot(t, output[:, 3], label='Wasps')
 
 allLines.legend(handles=[B, Bl, Il, W])
 
+
+#plot EAB and wasps on a another graph
+EAB_and_Wasps.set_title('EAB and Wasps vs time')
+
+EAB_and_Wasps.set_xlabel('Weeks')
+EAB_and_Wasps.set_ylabel('Population')
+
+infected_larvae, = EAB_and_Wasps.plot(t, output[:, 0], label='EAB')
+wasps, = EAB_and_Wasps.plot(t, output[:, 3], label='Wasps')
+
+EAB_and_Wasps.legend(handles=[infected_larvae, wasps],)
+
+
+
 plt.show()
+
+
+
+
+
+
 
 
 
